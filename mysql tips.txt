@@ -3,7 +3,7 @@ TIMEOFDAY - Return string format of timestamp with time zone.
 CURRENT_TIME - Return time with time zone.
 CURRENT_DATE - Return string date.
 
-EXTRACT(sub_com from col_name)
+EXTRACT(sub_com FROM col_name)
 - YEAR
 - QUARTER
 - MONTH
