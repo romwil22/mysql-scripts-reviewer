@@ -1,0 +1,225 @@
+EXERCISE 1
+-- Return all the products.
+-- name.
+-- unit price.
+-- new price (unit price * 1.1).
+
+SOLUTION
+SELECT name,unit_price,(unit_price * 1.1) as new_price FROM sql_inventory.products;
+
+EXERCISE 2
+-- Get the orders placed this year.
+
+SOLUTION
+SELECT * FROM store.orders
+WHERE order_date >= '2019-01-01';
+
+EXERCISE 3
+-- From the order_items table, get the items for order #6 where the total price is
+-- greater than 30.
+
+SOLUTION
+SELECT * FROM store.order_items
+ WHERE order_id = 6 AND (quantity * unit_price)  > 30;
+ 
+EXERCISE 4
+ -- Return products with Quantity in stock equal to 49, 38, and 72.
+ 
+SOLUTION
+SELECT * FROM sql_inventory.products
+WHERE quantity_in_stock IN (72,38,49);
+
+EXERCISE 5
+-- Return customers born in between 1/1/1990 and 1/1/2000.
+
+SOLUTION
+SELECT * FROM store.customers
+WHERE birth_date BETWEEN '1990-01-01' AND '2000-01-01';
+
+EXERCISE 6
+-- Get the customers whose addresses contain TRAIL or AVENUE.
+-- phone numbers end with 9.
+
+SOLUTION
+SELECT * FROM store.customers
+-- WHERE address LIKE '%trail%' OR address LIKE '%avenue%';
+
+ WHERE phone LIKE '%9';
+ 
+ REGEXP
+ -- ^ beginning.
+ -- $ end.
+ -- | logical OR
+ -- [acbd] matchhing
+ -- [a-r]]  matching between
+ 
+ EXERCISE 7
+ -- Get the customers whose.
+ -- First names are ELKA or AMBUR.
+ -- Last names end EY or ON.
+ -- Last names start with MY or contains SE.
+ -- Last names contain B followed by R or U.
+ 
+ SOLUTION
+ SELECT * FROM store.customers
+-- WHERE first_name REGEXP 'elka|ambur';
+ WHERE last_name REGEXP 'ey$|on';
+-- WHERE last_name REGEXP '^my|se';
+-- WHERE last_name REGEXP 'b[ru]';
+
+EXERCISE 8
+-- Get the orders that are not shipped.
+
+SOLUTION
+SELECT * FROM store.orders
+WHERE shipped_date IS NULL;
+
+EXERCISE 9
+-- Get the order id equal to 2.
+-- and sort it in descending order by total unit price.
+
+SOLUTION
+SELECT *,(quantity * unit_price) AS total_price FROM store.order_items
+WHERE order_id = 2
+ORDER BY (quantity * unit_price) DESC;
+
+EXERCISE 10
+-- Get the top three loyal customers.
+
+SOLUTION
+SELECT *,(quantity * unit_price) AS total_price FROM store.order_items
+WHERE order_id = 2
+ORDER BY (quantity * unit_price) DESC;
+
+EXERCISE 11
+-- Join order items and products
+-- Select order id, both product id, quantity, and unit price
+
+SOLUTION
+SELECT order_id,soi.product_id,quantity,soi.unit_price
+FROM store.order_items soi JOIN store.products sp
+ON soi.order_id = sp.product_id;
+
+EXERCISE 12
+-- Join payment, payment method, and clients.
+-- get the name of the client and payment method.
+
+SOLUTION
+SELECT ip.date,
+	   ip.invoice_id,
+	   ip.amount,ic.name,
+       ipm.name AS payment_method
+FROM invoicing.payments ip
+JOIN invoicing.clients ic
+ON ip.client_id = ic.client_id
+JOIN invoicing.payment_methods ipm
+ON ip.payment_id = ipm.payment_method_id
+
+-- COMPOSITE PRIMARY KEY
+-- A composite primary key is a combination of 2 or more columns used to create a unique primary key.
+
+EXERCISE 13
+-- Outer join product and order items.
+-- Get the product id, name, and quantinty.
+
+SOLUTION
+SELECT sp.product_id,name,quantity
+FROM store.products sp LEFT JOIN store.order_items soi
+ON  sp.product_id = soi.product_id
+
+EXERCISE 14
+-- Outer join customers, orders, shippers, and order statues.
+-- get order date, order id, first name, shipper, and status 
+
+SOLUTION
+SELECT order_date,order_id,first_name, ss.name AS shipper, sos.name status
+FROM store.orders so LEFT JOIN  store.customers sc
+ON sc.customer_id = so.customer_id
+LEFT JOIN store.shippers ss
+ON so.shipper_id = ss.shipper_id
+JOIN store.order_statuses sos
+ON so.status = sos.order_status_id
+
+EXERCISE 15
+-- join payments, clients, and payment methods
+-- get date, client name, amount, and payment method
+
+SOLUTION
+SELECT date,ic.name AS client, amount, ipm.payment_method_id AS payment_method
+FROM invoicing.payments ip
+JOIN invoicing.clients ic
+USING(client_id)
+JOIN invoicing.payment_methods ipm
+ON ip.payment_method = ipm.payment_method_id
+
+EXERCISE 16
+-- Do a cross join between shippers and products.
+-- Useing the implicit syntax and then using the explicit syntax.
+
+SOLUTION
+SELECT ss.name,sp.name 
+-- FROM store.shippers ss, store.products sp; -- implicit syntax
+
+FROM store.shippers ss
+CROSS JOIN store.products sp -- explicit syntax
+ORDER BY ss.name
+
+EXERCISE 17
+-- If points les than 2000 status is bronze.
+-- If points greater than or equal to 2000 and less than 3000 status is silver.
+-- If points greater than 3000 status is gold
+
+SOLUTION
+SELECT customer_id,first_name,points,'Bronze' AS type 
+FROM store.customers
+WHERE points < 2000
+UNION
+SELECT customer_id,first_name,points,'Silver' AS type
+FROM store.customers
+WHERE points >= 2000 AND points <=3000
+UNION
+SELECT customer_id,first_name,points,'Gold' AS type
+FROM store.customers
+WHERE points > 3000
+
+ORDER BY first_name
+
+EXERCISE 18
+-- Insert three rows in the products table.
+
+SOLUTION
+INSERT INTO store.products
+	(name,quantity_in_stock,unit_price)
+VALUE ('Drinks - Coke, Pepsi', 40, 2.00),
+	  ('Fries', 60, 1.50),
+      ('Ice cream', 90, 1.00)
+
+EXERCISE 19
+-- Make an archive for client table join with client table that payment date have date.
+
+SOLUTION
+CREATE TABLE invoicing.invoices_archived
+
+SELECT ii.invoice_id,ic.name AS clients, ii.invoice_total,ii.payment_total,ii.invoice_date,ii.payment_date,ii.due_date
+FROM invoicing.invoices ii JOIN invoicing.clients ic
+USING (client_id)
+WHERE payment_date IS NOT NULL
+
+EXERCISE 20
+-- Write a SQL statement to give any customers born before 1990
+-- extra 50 points.
+
+SOLUTION
+UPDATE store.customers
+SET points = (points + 50)
+WHERE birth_date < '1990-01-01';
+
+EXERCISE 21
+-- Update comments in orders where customers points greater than 3000.
+
+SOLUTION
+UPDATE store.orders
+SET comments = 'Gold'
+WHERE customer_id IN 
+					(SELECT customer_id FROM store.customers
+						WHERE points > 3000)

@@ -1,0 +1,4 @@
+NOW() - Return timestamp with time zone.
+TIMEOFDAY - Return string format of timestamp with time zone.
+CURRENT_TIME - Return time with time zone.
+CURRENT_DATE - Return string date.
