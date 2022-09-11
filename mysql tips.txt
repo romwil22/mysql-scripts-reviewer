@@ -2,3 +2,15 @@ NOW() - Return timestamp with time zone.
 TIMEOFDAY - Return string format of timestamp with time zone.
 CURRENT_TIME - Return time with time zone.
 CURRENT_DATE - Return string date.
+
+EXTRACT(sub_com from col_name)
+- YEAR
+- QUARTER
+- MONTH
+- WEEK
+- DAY
+
+AGE(col_name)
+
+TO_CHAR(col_name, string format)
+- Search "data type formatting functions".
